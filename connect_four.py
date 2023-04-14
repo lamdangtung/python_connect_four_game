@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 import sys
 import math
+import random
 ROW_COUNT = 6
 COLUMN_COUNT = 7
 SQUARE_SIZE = 100
@@ -133,7 +134,7 @@ while not game_over:
             pygame.display.update()
 
     if turn == AI and not game_over:
-        col = 2
+        col = random.randrange(COLUMN_COUNT)
         if is_valid_location(board, col):
             row = get_next_open_row(board, col)
             drop_piece(board, row, col, 2)
