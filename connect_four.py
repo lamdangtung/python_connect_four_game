@@ -10,6 +10,8 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 RADIUS = 45
+PLAYER = 0
+AI = 1
 
 
 def create_board():
@@ -97,11 +99,12 @@ while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+
         if event.type == pygame.MOUSEMOTION:
             pygame.draw.rect(
                 screen, BLACK, (0, 0, width, SQUARE_SIZE))
             posX = event.pos[0]
-            if turn == 0:
+            if turn == PLAYER:
                 pygame.draw.circle(
                     screen, RED, (posX, int(SQUARE_SIZE/2)), RADIUS)
             else:
@@ -109,32 +112,42 @@ while not game_over:
                     screen, GREEN, (posX, int(SQUARE_SIZE/2)), RADIUS)
 
             pygame.display.update()
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             posX = event.pos[0]
             col = int(math.floor(posX/SQUARE_SIZE))
             if (is_valid_location(board, col)):
                 row = get_next_open_row(board, col)
-                if turn == 0:
+                if turn == PLAYER:
                     drop_piece(board, row, col, 1)
                     if wining_move(board, 1):
                         pygame.draw.rect(
                             screen, BLACK, (0, 0, width, SQUARE_SIZE))
-                        label = font.render("Player 1 wins!!", 1, RED)
+                        label = font.render("Player  wins!!", 1, RED)
                         screen.blit(label, (40, 10))
                         game_over = True
-                else:
-                    drop_piece(board, row, col, 2)
-                    if wining_move(board, 2):
-                        pygame.draw.rect(
-                            screen, BLACK, (0, 0, width, SQUARE_SIZE))
-                        label = font.render("Player 1 wins!!", 2, GREEN)
-                        screen.blit(label, (40, 10))
-                        game_over = True
-            turn += 1
-            turn %= 2
+                    turn += 1
+                    turn %= 2
             print_board(board)
             draw_board(np.flip(board, 0))
             pygame.display.update()
 
-            if game_over:
-                pygame.time.wait(3000)
+    if turn == AI and not game_over:
+        col = 2
+        if is_valid_location(board, col):
+            row = get_next_open_row(board, col)
+            drop_piece(board, row, col, 2)
+            if wining_move(board, 2):
+                pygame.draw.rect(
+                    screen, BLACK, (0, 0, width, SQUARE_SIZE))
+                label = font.render("AI wins!!", 1, GREEN)
+                screen.blit(label, (40, 10))
+                game_over = True
+            turn += 1
+            turn %= 2
+        print_board(board)
+        draw_board(np.flip(board, 0))
+        pygame.display.update()
+
+    if game_over:
+        pygame.time.wait(3000)
